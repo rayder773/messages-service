@@ -1,20 +1,21 @@
+import { TABLES } from "../constant";
 import { queryBuilder } from "../db";
 import { log } from "../logger";
 
-const createMessageInDb = () => {
-  return queryBuilder.insert({ text: "Hello, world!" }).into("message");
+const createMessageInDb = (data: { text: string }) => {
+  return queryBuilder.insert(data).into(TABLES.MESSAGES);
 };
 
 const logCreateMessageSuccess = () => {
-  return log(`Message table created`);
+  return log(`Message created successfully`);
 };
 
 const logCreateMessageError = () => {
   return log(`Error creating message table`);
 };
 
-const createMessage = () => {
-  return createMessageInDb().then(logCreateMessageSuccess).catch(logCreateMessageError);
+const createMessage = (data: { text: string }) => {
+  return createMessageInDb(data).then(logCreateMessageSuccess).catch(logCreateMessageError);
 };
 
 export default createMessage;
