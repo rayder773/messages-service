@@ -1,5 +1,4 @@
-import { TABLES } from "../constant";
-import { queryBuilder } from "../db";
+import { queryBuilder, TABLES } from "../db";
 import { log } from "../logger";
 
 const createMessageInDb = (data: { text: string }) => {

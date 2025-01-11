@@ -1,15 +1,16 @@
 import { newDb } from "pg-mem";
 import { Knex as KnexType } from "knex";
 import createMessage from "./create_message";
-import { queryBuilder } from "../db";
-import { TABLES } from "../constant";
+import { queryBuilder, TABLES } from "../db";
 
 jest.mock("../db", () => {
   const mem = newDb();
+  const actual = jest.requireActual("../db");
 
   const knex: KnexType = mem.adapters.createKnex();
 
   return {
+    ...actual,
     queryBuilder: knex,
   };
 });
