@@ -1,12 +1,8 @@
 import { Request, Response } from "express";
-import { MessageServiceAPI } from "../types";
+import createMessage from "../actions/create_message";
 
-const onPostMessage = async (
-  req: Request,
-  res: Response,
-  messageService: MessageServiceAPI
-) => {
-  await messageService.createMessage();
+const onPostMessage = async (req: Request, res: Response) => {
+  await createMessage();
 
   res.status(201).send();
 };

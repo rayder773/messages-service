@@ -1,7 +1,8 @@
-import { MessageServiceArgs } from "../types";
+import { query } from "../db";
+import { log } from "../logger";
 
-const createMessageInDb = (db: any) => {
-  return db.run(
+const createMessageInDb = () => {
+  return query(
     `CREATE TABLE message (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER,
@@ -12,28 +13,16 @@ const createMessageInDb = (db: any) => {
   );
 };
 
-const logCreateMessageSuccess = (logger: any) => {
-  return logger.info("Message table created");
+const logCreateMessageSuccess = () => {
+  return log(`Message table created`);
 };
 
-const logCreateMessageError = (logger: any) => {
-  return logger.error(`Error creating message table`);
+const logCreateMessageError = () => {
+  return log(`Error creating message table`);
 };
 
-const sendMessageOnCreateMessageSuccess = (ws: any, message: any) => {
-  return ws.send(JSON.stringify(message));
-};
-
-const createMessage = ({ db, logger, ws }: MessageServiceArgs) => {
-  return () =>
-    createMessageInDb(db)
-      .then(() => logCreateMessageSuccess(logger))
-      .then(() =>
-        sendMessageOnCreateMessageSuccess(ws, {
-          type: "create_message_success",
-        })
-      )
-      .catch(() => logCreateMessageError(logger));
+const createMessage = () => {
+  return createMessageInDb().then(logCreateMessageSuccess).catch(logCreateMessageError);
 };
 
 export default createMessage;
