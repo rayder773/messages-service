@@ -2,10 +2,14 @@ import express from "express";
 import onPostMessage from "./controllers/on_post_message";
 import dotenv from "dotenv";
 import { getClient } from "./db";
+import bodyParser = require("body-parser");
 
 dotenv.config();
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/api/v1/message", onPostMessage);
 
