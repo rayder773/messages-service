@@ -3,6 +3,7 @@ import onPostMessage from "./controllers/on_post_message";
 import dotenv from "dotenv";
 import { getClient } from "./db";
 import bodyParser = require("body-parser");
+import onGetMessages from "./controllers/on_get_messages";
 
 dotenv.config();
 
@@ -11,7 +12,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/api/v1/message", onPostMessage);
+app.post("/api/v1/messages", onPostMessage);
+app.get("/api/v1/messages", onGetMessages);
 
 const port = process.env.APP_PORT || 3000;
 
