@@ -9,8 +9,8 @@ const logCreateMessageSuccess = () => {
   return log(`Message created successfully`);
 };
 
-const logCreateMessageError = () => {
-  return log(`Error creating message table`);
+const logCreateMessageError = (error: string) => {
+  return log(`Error creating message table in database: ${error}`);
 };
 
 const createMessage = (data: { text: string }) => {

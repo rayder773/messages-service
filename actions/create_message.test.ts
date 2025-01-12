@@ -16,10 +16,12 @@ jest.mock("../db", () => {
 });
 
 beforeAll(async () => {
-  await queryBuilder.schema.createTable(TABLES.MESSAGES, (table) => {
-    table.increments("id").primary();
-    table.string("text");
-  });
+  await queryBuilder.migrate.latest();
+});
+
+afterAll(async () => {
+  await queryBuilder.migrate.rollback();
+  await queryBuilder.destroy();
 });
 
 describe("createMessage", () => {
