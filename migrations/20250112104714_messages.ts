@@ -1,5 +1,5 @@
 import type { Knex } from "knex";
-import { TABLES } from "../db";
+import { TABLES } from "@/db";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable(TABLES.MESSAGES, (table) => {

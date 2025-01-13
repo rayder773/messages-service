@@ -3,7 +3,7 @@ import request from "supertest";
 import { newDb } from "pg-mem";
 import { Knex as KnexType } from "knex";
 import { addRoutes } from "../router";
-import { queryBuilder } from "../db";
+import { queryBuilder } from "@/db";
 
 beforeAll(() => {
   addRoutes(app);
@@ -18,9 +18,9 @@ afterAll(async () => {
   await queryBuilder.destroy();
 });
 
-jest.mock("../db", () => {
+jest.mock("@/db", () => {
   const mem = newDb();
-  const actual = jest.requireActual("../db");
+  const actual = jest.requireActual("@/db");
 
   const knex: KnexType = mem.adapters.createKnex();
 

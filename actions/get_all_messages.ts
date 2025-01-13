@@ -1,4 +1,4 @@
-import { queryBuilder, TABLES } from "../db";
+import { queryBuilder, TABLES } from "@/db";
 
 const getAllMessages = () => {
   return queryBuilder.select().from(TABLES.MESSAGES);

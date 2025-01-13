@@ -1,4 +1,4 @@
-import { getClient } from "./db";
+import { getClient } from "@/db";
 import { addRoutes } from "./router";
 import { app } from "./server";
 

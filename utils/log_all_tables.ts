@@ -1,4 +1,4 @@
-import { queryBuilder } from "../db";
+import { queryBuilder } from "@/db";
 
 const logAllTables = async () => {
   queryBuilder

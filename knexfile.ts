@@ -1,5 +1,6 @@
 import type { Knex } from "knex";
 import dotenv from "dotenv";
+require("tsconfig-paths/register");
 
 dotenv.config();
 
