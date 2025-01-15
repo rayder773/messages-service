@@ -14,10 +14,18 @@ const logCreateMessageError = (error: string) => {
   return log(`Error creating message table in database: ${error}`);
 };
 
-const createMessage = (message: string, queryBuilder: Knex) => {
-  return createMessageInDb(message, queryBuilder)
-    .then(logCreateMessageSuccess)
-    .catch(logCreateMessageError);
+const createMessage = async (message: string, queryBuilder: Knex) => {
+  let result;
+
+  try {
+    result = await createMessageInDb(message, queryBuilder);
+    logCreateMessageSuccess();
+  } catch (error) {
+    logCreateMessageError(error as string);
+    result = { hasError: true };
+  }
+
+  return result;
 };
 
 export default createMessage;
