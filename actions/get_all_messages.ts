@@ -1,6 +1,7 @@
-import { queryBuilder, TABLES } from "@/db";
+import { TABLES } from "@/db";
+import type { Knex } from "knex";
 
-const getAllMessages = () => {
+const getAllMessages = (queryBuilder: Knex) => {
   return queryBuilder.select().from(TABLES.MESSAGES);
 };
 

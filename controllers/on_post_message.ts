@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
-import createMessage from "../actions/create_message";
+import { Response } from "express";
 
-const onPostMessage = async (req: Request, res: Response) => {
-  await createMessage(req.body);
+const onPostMessage = async (res: Response, createMessage: () => Promise<void>) => {
+  const result = await createMessage();
 
   res.status(201).send();
 };

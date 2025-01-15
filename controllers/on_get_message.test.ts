@@ -1,43 +1,49 @@
-import { app } from "../server";
+import { allHandlers, createApp, onGetMessagesHandler } from "@/server";
+import { Knex } from "knex";
+import { IBackup, newDb } from "pg-mem";
+import { Express } from "express";
 import request from "supertest";
-import { newDb } from "pg-mem";
-import { Knex as KnexType } from "knex";
-import { addRoutes } from "../router";
-import { queryBuilder } from "@/db";
+import { END_POINTS } from "@/server";
+import { TABLES } from "@/db";
 
-beforeAll(() => {
-  addRoutes(app);
-});
+let app: Express;
+let backup: IBackup;
+let db: Knex;
 
 beforeAll(async () => {
-  await queryBuilder.migrate.latest();
-});
-
-afterAll(async () => {
-  await queryBuilder.migrate.rollback();
-  await queryBuilder.destroy();
-});
-
-jest.mock("@/db", () => {
   const mem = newDb();
-  const actual = jest.requireActual("@/db");
+  db = mem.adapters.createKnex();
 
-  const knex: KnexType = mem.adapters.createKnex();
+  await db.migrate.latest();
 
-  return {
-    ...actual,
-    queryBuilder: knex,
-  };
+  backup = mem.backup();
+
+  app = createApp({
+    ...allHandlers,
+    onGetMessages: onGetMessagesHandler(db),
+  });
+});
+
+beforeEach(() => {
+  backup.restore();
 });
 
 describe("GET /messages", () => {
-  it("should return all messages", async () => {
-    const messageText = "Hello, world!";
-    await request(app).post("/api/v1/messages").send({ text: messageText });
+  it("should return empty array if no messages", async () => {
+    const response = await request(app).get(END_POINTS.GET_MESSAGES);
 
-    const response = await request(app).get("/api/v1/messages");
+    expect(response.status).toBe(204);
+  });
+
+  it("should return all messages", async () => {
+    const messages = [{ text: "Hello" }, { text: "World" }];
+    await db(TABLES.MESSAGES).insert(messages);
+
+    const response = await request(app).get(END_POINTS.GET_MESSAGES);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([{ id: 1, text: messageText }]);
+    expect(response.body).toEqual(
+      messages.map((message, index) => ({ id: index + 1, ...message }))
+    );
   });
 });
