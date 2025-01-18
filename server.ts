@@ -1,11 +1,13 @@
 import bodyParser from "body-parser";
 import express, { Request, Response, Express, NextFunction } from "express";
 import { getClient, queryBuilder } from "./db";
-import onPostMessage, { validatePostMessageBody } from "./controllers/on_post_message";
+import onPostMessage from "./controllers/on_post_message";
 import createMessage from "./actions/create_message";
 import onGetMessages from "./controllers/on_get_messages";
 import getAllMessages from "./actions/get_all_messages";
 import { Knex } from "knex";
+import validateRequest from "./utils/validate_request";
+import Joi from "joi";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
@@ -31,7 +33,7 @@ const createApp = ({
 };
 
 const onPostMessageHanler = (queryBuilder: Knex) => [
-  validatePostMessageBody,
+  validateRequest.bind(null, Joi.object({ text: Joi.string().required() })),
   (req: Request, res: Response) => onPostMessage(res, () => createMessage(req.body, queryBuilder)),
 ];
 

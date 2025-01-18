@@ -1,5 +1,4 @@
-import { Response, Request, NextFunction } from "express";
-import Joi from "joi";
+import { Response } from "express";
 
 const onPostMessage = async (res: Response, createMessage: () => Promise<unknown>) => {
   const result = (await createMessage()) as any;
@@ -11,22 +10,5 @@ const onPostMessage = async (res: Response, createMessage: () => Promise<unknown
 
   res.status(201).send();
 };
-
-const validatePostMessageBody = (req: Request, res: Response, next: NextFunction) => {
-  const schema = Joi.object({
-    text: Joi.string().required(),
-  });
-
-  const validationResult = schema.validate(req.body);
-
-  if (validationResult.error) {
-    res.status(400).send();
-    return;
-  }
-
-  next();
-};
-
-export { validatePostMessageBody };
 
 export default onPostMessage;

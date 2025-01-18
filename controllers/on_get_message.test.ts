@@ -1,6 +1,6 @@
 import { allHandlers, createApp, onGetMessagesHandler } from "@/server";
 import { Knex } from "knex";
-import { IBackup, newDb } from "pg-mem";
+import { IBackup } from "pg-mem";
 import { Express } from "express";
 import request from "supertest";
 import { END_POINTS } from "@/server";
