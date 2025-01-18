@@ -5,18 +5,17 @@ import { Express } from "express";
 import request from "supertest";
 import { END_POINTS } from "@/server";
 import { TABLES } from "@/db";
+import setUpTests from "@/utils/setup_tests";
 
 let app: Express;
 let backup: IBackup;
 let db: Knex;
 
 beforeAll(async () => {
-  const mem = newDb();
-  db = mem.adapters.createKnex();
+  const { db: dbInstance, backup: backupInstance } = await setUpTests();
 
-  await db.migrate.latest();
-
-  backup = mem.backup();
+  db = dbInstance;
+  backup = backupInstance;
 
   app = createApp({
     ...allHandlers,

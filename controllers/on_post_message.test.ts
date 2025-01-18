@@ -5,18 +5,17 @@ import { Express } from "express";
 import request from "supertest";
 import { END_POINTS } from "@/server";
 import { TABLES } from "@/db";
+import setUpTests from "@/utils/setup_tests";
 
 let app: Express;
 let backup: IBackup;
 let db: Knex;
 
 beforeAll(async () => {
-  const mem = newDb();
-  db = mem.adapters.createKnex();
+  const { db: dbInstance, backup: backupInstance } = await setUpTests();
 
-  await db.migrate.latest();
-
-  backup = mem.backup();
+  db = dbInstance;
+  backup = backupInstance;
 
   app = createApp({
     ...allHandlers,
@@ -37,5 +36,21 @@ describe("POST /messages", () => {
     const messages = await db.select().from(TABLES.MESSAGES);
 
     expect(messages).toEqual([{ id: 1, ...message }]);
+  });
+
+  it("should return 201 if message is created", async () => {
+    const message = { text: "Hello" };
+
+    const response = await request(app).post(END_POINTS.POST_MESSAGE).send(message);
+
+    expect(response.status).toBe(201);
+  });
+
+  it("should return 400 if message is empty", async () => {
+    const response = await request(app).post(END_POINTS.POST_MESSAGE).send();
+    const messages = await db.select().from(TABLES.MESSAGES);
+
+    expect(messages).toEqual([]);
+    expect(response.status).toBe(400);
   });
 });

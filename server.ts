@@ -1,7 +1,7 @@
 import bodyParser from "body-parser";
-import express, { Request, Response, Express } from "express";
+import express, { Request, Response, Express, NextFunction } from "express";
 import { getClient, queryBuilder } from "./db";
-import onPostMessage from "./controllers/on_post_message";
+import onPostMessage, { validatePostMessageBody } from "./controllers/on_post_message";
 import createMessage from "./actions/create_message";
 import onGetMessages from "./controllers/on_get_messages";
 import getAllMessages from "./actions/get_all_messages";
@@ -18,20 +18,22 @@ const createApp = ({
   onGetMessages,
 }: {
   app?: Express;
-  onPostMessage: (req: Request, res: Response) => void;
+  onPostMessage: Array<(req: Request, res: Response, next: NextFunction) => void>;
   onGetMessages: (req: Request, res: Response) => void;
 }) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  app.post(END_POINTS.POST_MESSAGE, onPostMessage);
+  app.post(END_POINTS.POST_MESSAGE, ...onPostMessage);
   app.get(END_POINTS.GET_MESSAGES, onGetMessages);
 
   return app;
 };
 
-const onPostMessageHanler = (queryBuilder: Knex) => (req: Request, res: Response) =>
-  onPostMessage(res, () => createMessage(req.body, queryBuilder));
+const onPostMessageHanler = (queryBuilder: Knex) => [
+  validatePostMessageBody,
+  (req: Request, res: Response) => onPostMessage(res, () => createMessage(req.body, queryBuilder)),
+];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
   onGetMessages(res, () => getAllMessages(queryBuilder));
