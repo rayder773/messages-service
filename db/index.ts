@@ -28,6 +28,9 @@ const query = async (text: string, params?: any[]): Promise<pg.QueryResult> => {
 
 const TABLES = {
   MESSAGES: "messages",
+  users: "users",
+  roles: "roles",
+  userRoles: "user_roles",
 };
 
 export { getClient, query, knexInstance as queryBuilder, TABLES };

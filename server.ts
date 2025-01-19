@@ -8,20 +8,27 @@ import getAllMessages from "./actions/get_all_messages";
 import { Knex } from "knex";
 import validateRequest from "./utils/validate_request";
 import Joi from "joi";
+import onPostLogin from "./controllers/on_post_login";
+import getUserByEmail from "./actions/get_user";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
   GET_MESSAGES: "/api/v1/messages",
+  POST_LOGIN: "/api/v1/login",
 };
+
+type Handler = Array<(req: Request, res: Response, next: NextFunction) => void>;
 
 const createApp = ({
   app = express(),
   onPostMessage,
   onGetMessages,
+  onPostLogin,
 }: {
   app?: Express;
-  onPostMessage: Array<(req: Request, res: Response, next: NextFunction) => void>;
+  onPostMessage: Handler;
   onGetMessages: (req: Request, res: Response) => void;
+  onPostLogin: Handler;
 }) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,12 +36,19 @@ const createApp = ({
   app.post(END_POINTS.POST_MESSAGE, ...onPostMessage);
   app.get(END_POINTS.GET_MESSAGES, onGetMessages);
 
+  app.post(END_POINTS.POST_LOGIN, ...onPostLogin);
+
   return app;
 };
 
 const onPostMessageHanler = (queryBuilder: Knex) => [
   validateRequest.bind(null, Joi.object({ text: Joi.string().required() })),
   (req: Request, res: Response) => onPostMessage(res, () => createMessage(req.body, queryBuilder)),
+];
+
+const onPostLoginHandler = (queryBuilder: Knex) => [
+  (req: Request, res: Response) =>
+    onPostLogin(res, () => getUserByEmail(req.body.email, queryBuilder)),
 ];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
@@ -58,6 +72,7 @@ const startServer = async (port: number, app: Express) => {
 const allHandlers = {
   onGetMessages: onGetMessagesHandler(queryBuilder),
   onPostMessage: onPostMessageHanler(queryBuilder),
+  onPostLogin: onPostLoginHandler(queryBuilder),
 };
 
 export {
