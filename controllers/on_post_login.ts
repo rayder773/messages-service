@@ -1,14 +1,9 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 
-const onPostLogin = (res: Response, getUserByEmail: () => Promise<unknown>) => {
-  getUserByEmail().then((result) => {
-    // if (result?.hasError) {
-    //   res.status(500).send();
-    //   return;
-    // }
+const onPostLogin = (req: Request, res: Response, getUserByEmail: () => Promise<unknown>) => {
+  req.session.test = "228";
 
-    res.status(200).send(result);
-  });
+  res.status(200).send();
 };
 
 export default onPostLogin;

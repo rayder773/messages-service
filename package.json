@@ -21,10 +21,14 @@
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
+    "@types/cookie": "^1.0.0",
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
     "@types/jest": "^29.5.14",
     "@types/pg": "^8.11.10",
     "@types/supertest": "^6.0.2",
+    "cookie-parser": "^1.4.7",
     "jest": "^29.7.0",
     "pg-mem": "^3.0.4",
     "supertest": "^7.0.0",

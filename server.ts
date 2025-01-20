@@ -10,6 +10,8 @@ import validateRequest from "./utils/validate_request";
 import Joi from "joi";
 import onPostLogin from "./controllers/on_post_login";
 import getUserByEmail from "./actions/get_user";
+import setupSession from "./utils/setup_session";
+import { MemoryStore } from "express-session";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
@@ -24,14 +26,17 @@ const createApp = ({
   onPostMessage,
   onGetMessages,
   onPostLogin,
+  store,
 }: {
   app?: Express;
   onPostMessage: Handler;
   onGetMessages: (req: Request, res: Response) => void;
   onPostLogin: Handler;
+  store: MemoryStore;
 }) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(setupSession(store));
 
   app.post(END_POINTS.POST_MESSAGE, ...onPostMessage);
   app.get(END_POINTS.GET_MESSAGES, onGetMessages);
@@ -48,7 +53,7 @@ const onPostMessageHanler = (queryBuilder: Knex) => [
 
 const onPostLoginHandler = (queryBuilder: Knex) => [
   (req: Request, res: Response) =>
-    onPostLogin(res, () => getUserByEmail(req.body.email, queryBuilder)),
+    onPostLogin(req, res, () => getUserByEmail(req.body.email, queryBuilder)),
 ];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
@@ -73,6 +78,7 @@ const allHandlers = {
   onGetMessages: onGetMessagesHandler(queryBuilder),
   onPostMessage: onPostMessageHanler(queryBuilder),
   onPostLogin: onPostLoginHandler(queryBuilder),
+  store: new MemoryStore(),
 };
 
 export {
