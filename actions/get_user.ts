@@ -1,8 +1,8 @@
 import { TABLES } from "@/db";
 import { Knex } from "knex";
 
-const getUserByEmail = (email: string, queryBuilder: Knex) => {
-  return queryBuilder.select().from(TABLES.users).where({ email }).first();
+const getUserByEmailAndPass = async (email: string, password: string, queryBuilder: Knex) => {
+  return queryBuilder.select().from(TABLES.users).where({ email, password }).first();
 };
 
-export default getUserByEmail;
+export { getUserByEmailAndPass };

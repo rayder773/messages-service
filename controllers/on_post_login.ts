@@ -1,8 +1,18 @@
-import { Response, Request } from "express";
+import { Request, Response } from "express";
 
-const onPostLogin = (req: Request, res: Response, getUserByEmail: () => Promise<unknown>) => {
-  req.session.test = "228";
+const onPostLogin = async (
+  req: Request,
+  res: Response,
+  getUserByEmailAndPass: () => Promise<unknown>
+) => {
+  const user = await getUserByEmailAndPass();
 
+  if (!user) {
+    res.status(401).send();
+    return;
+  }
+
+  req.session.isAuth = true;
   res.status(200).send();
 };
 

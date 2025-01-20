@@ -9,7 +9,7 @@ import { Knex } from "knex";
 import validateRequest from "./utils/validate_request";
 import Joi from "joi";
 import onPostLogin from "./controllers/on_post_login";
-import getUserByEmail from "./actions/get_user";
+import { getUserByEmailAndPass } from "./actions/get_user";
 import setupSession from "./utils/setup_session";
 import { MemoryStore } from "express-session";
 
@@ -53,7 +53,9 @@ const onPostMessageHanler = (queryBuilder: Knex) => [
 
 const onPostLoginHandler = (queryBuilder: Knex) => [
   (req: Request, res: Response) =>
-    onPostLogin(req, res, () => getUserByEmail(req.body.email, queryBuilder)),
+    onPostLogin(req, res, () =>
+      getUserByEmailAndPass(req.body.email, req.body.password, queryBuilder)
+    ),
 ];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
@@ -84,6 +86,7 @@ const allHandlers = {
 export {
   onPostMessageHanler,
   onGetMessagesHandler,
+  onPostLoginHandler,
   startServer,
   createApp,
   allHandlers,
