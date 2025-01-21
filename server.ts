@@ -12,9 +12,9 @@ import onPostLogin from "./controllers/on_post_login";
 import { getUserByEmail, getUserByEmailAndPass } from "./actions/get_user";
 import setupSession from "./utils/setup_session";
 import { MemoryStore } from "express-session";
-import postLogout from "./controllers/post_logout";
 import postRegister from "./controllers/post_register";
 import createUser from "./actions/create_user";
+import logoutSession from "./controllers/logout_session";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
@@ -69,7 +69,7 @@ const onPostLoginHandler = (queryBuilder: Knex) => [
     ),
 ];
 
-const onPostLogoutHandler = () => [(req: Request, res: Response) => postLogout(req, res)];
+const onPostLogoutHandler = () => [logoutSession];
 const onPostRegisterHandler = (queryBuilder: Knex) => [
   validateRequest.bind(
     null,
