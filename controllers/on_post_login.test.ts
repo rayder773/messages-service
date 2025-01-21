@@ -4,6 +4,7 @@ import { END_POINTS } from "@/server";
 import { TABLES } from "@/db";
 import getAuthCookie from "@/utils/get_auth_cookie";
 import setUpTests from "@/utils/setup_tests";
+import { hashPassword } from "@/utils/password";
 
 const { db, app, store } = setUpTests((db) => ({
   onPostLogin: onPostLoginHandler(db),
@@ -14,7 +15,12 @@ const wrongUser = { email: "a@gmail.com", password: "wrong_password" };
 
 describe("POST /login", () => {
   it("should return 200 if user exists", async () => {
-    await db.insert(correctUser).into(TABLES.users);
+    await db
+      .insert({
+        email: correctUser.email,
+        password: await hashPassword(correctUser.password),
+      })
+      .into(TABLES.users);
 
     const response = await request(app).post(END_POINTS.POST_LOGIN).send(correctUser);
 
@@ -28,7 +34,12 @@ describe("POST /login", () => {
   });
 
   it("should set session cookie if user exists", async () => {
-    await db.insert(correctUser).into(TABLES.users);
+    await db
+      .insert({
+        email: correctUser.email,
+        password: await hashPassword(correctUser.password),
+      })
+      .into(TABLES.users);
 
     const response = await request(app).post(END_POINTS.POST_LOGIN).send(correctUser);
 

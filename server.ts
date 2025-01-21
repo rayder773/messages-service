@@ -64,10 +64,7 @@ const onPostMessageHanler = (queryBuilder: Knex) => [
 ];
 
 const onPostLoginHandler = (queryBuilder: Knex) => [
-  (req: Request, res: Response) =>
-    onPostLogin(req, res, () =>
-      getUserByEmailAndPass(req.body.email, req.body.password, queryBuilder)
-    ),
+  (req: Request, res: Response) => onPostLogin(req, res, queryBuilder),
 ];
 
 const onPostLogoutHandler = () => [logoutSession];

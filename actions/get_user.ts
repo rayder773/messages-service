@@ -2,7 +2,7 @@ import { TABLES } from "@/db";
 import { User } from "@/types";
 import { Knex } from "knex";
 
-const getUserByEmailAndPass = async (email: string, password: string, queryBuilder: Knex) => {
+const getUserByEmailAndPass = (email: string, password: string, queryBuilder: Knex) => {
   return queryBuilder.select().from(TABLES.users).where({ email, password }).first();
 };
 
