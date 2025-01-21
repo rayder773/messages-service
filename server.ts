@@ -15,6 +15,7 @@ import { MemoryStore } from "express-session";
 import postRegister from "./controllers/post_register";
 import createUser from "./actions/create_user";
 import logoutSession from "./controllers/logout_session";
+import { hashPassword } from "./utils/password";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
@@ -79,11 +80,11 @@ const onPostRegisterHandler = (queryBuilder: Knex) => [
     postRegister(
       req,
       res,
-      () =>
+      async () =>
         createUser(
           {
             email: req.body.email,
-            password: req.body.password,
+            password: await hashPassword(req.body.password),
           },
           queryBuilder
         ),

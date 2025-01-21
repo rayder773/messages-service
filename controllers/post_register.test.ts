@@ -1,5 +1,6 @@
 import { TABLES } from "@/db";
 import { END_POINTS, onPostRegisterHandler } from "@/server";
+import { checkPassword } from "@/utils/password";
 import setUpTests from "@/utils/setup_tests";
 import request from "supertest";
 
@@ -37,5 +38,13 @@ describe("POST /register", () => {
     const response = await request(app).post(END_POINTS.POST_REGISTER).send();
 
     expect(response.status).toBe(400);
+  });
+
+  it("check if password is hashed", async () => {
+    await request(app).post(END_POINTS.POST_REGISTER).send(newUser);
+
+    const user = await db(TABLES.users).where({ email: newUser.email }).first();
+
+    expect(await checkPassword(newUser.password, user.password)).toBe(true);
   });
 });

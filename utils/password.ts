@@ -5,7 +5,6 @@ const saltRounds = 10; // Уровень сложности хешировани
 const hashPassword = async (password: string) => {
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log("Зашифрованный пароль:", hashedPassword);
     return hashedPassword;
   } catch (error) {
     console.error("Ошибка хеширования пароля:", error);
@@ -15,8 +14,7 @@ const hashPassword = async (password: string) => {
 // Проверка пароля
 const checkPassword = async (password: string, hashedPassword: string) => {
   try {
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-    console.log(isMatch ? "Пароль правильный" : "Неверный пароль");
+    return bcrypt.compare(password, hashedPassword);
   } catch (error) {
     console.error("Ошибка проверки пароля:", error);
   }
