@@ -12,11 +12,15 @@ import onPostLogin from "./controllers/on_post_login";
 import { getUserByEmailAndPass } from "./actions/get_user";
 import setupSession from "./utils/setup_session";
 import { MemoryStore } from "express-session";
+import postLogout from "./controllers/post_logout";
+import postRegister from "./controllers/post_register";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
   GET_MESSAGES: "/api/v1/messages",
   POST_LOGIN: "/api/v1/login",
+  POST_LOGOUT: "/api/v1/logout",
+  POST_REGISTER: "/api/v1/register",
 };
 
 type Handler = Array<(req: Request, res: Response, next: NextFunction) => void>;
@@ -26,10 +30,14 @@ const createApp = ({
   onPostMessage,
   onGetMessages,
   onPostLogin,
+  onPostLogout,
+  onPostRegister,
   store,
 }: {
   app?: Express;
   onPostMessage: Handler;
+  onPostLogout: Handler;
+  onPostRegister: Handler;
   onGetMessages: (req: Request, res: Response) => void;
   onPostLogin: Handler;
   store: MemoryStore;
@@ -42,6 +50,8 @@ const createApp = ({
   app.get(END_POINTS.GET_MESSAGES, onGetMessages);
 
   app.post(END_POINTS.POST_LOGIN, ...onPostLogin);
+  app.post(END_POINTS.POST_LOGOUT, ...onPostLogout);
+  app.post(END_POINTS.POST_REGISTER, ...onPostRegister);
 
   return app;
 };
@@ -56,6 +66,11 @@ const onPostLoginHandler = (queryBuilder: Knex) => [
     onPostLogin(req, res, () =>
       getUserByEmailAndPass(req.body.email, req.body.password, queryBuilder)
     ),
+];
+
+const onPostLogoutHandler = () => [(req: Request, res: Response) => postLogout(req, res)];
+const onPostRegisterHandler = (queryBuilder: Knex) => [
+  (req: Request, res: Response) => postRegister(req, res),
 ];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
@@ -80,6 +95,8 @@ const allHandlers = {
   onGetMessages: onGetMessagesHandler(queryBuilder),
   onPostMessage: onPostMessageHanler(queryBuilder),
   onPostLogin: onPostLoginHandler(queryBuilder),
+  onPostLogout: onPostLogoutHandler(),
+  onPostRegister: onPostRegisterHandler(queryBuilder),
   store: new MemoryStore(),
 };
 

@@ -1,31 +1,12 @@
-import { allHandlers, createApp, onGetMessagesHandler } from "@/server";
-import { Knex } from "knex";
-import { IBackup } from "pg-mem";
-import { Express } from "express";
+import { onGetMessagesHandler } from "@/server";
 import request from "supertest";
 import { END_POINTS } from "@/server";
 import { TABLES } from "@/db";
 import setUpTests from "@/utils/setup_tests";
 
-let app: Express;
-let backup: IBackup;
-let db: Knex;
-
-beforeAll(async () => {
-  const { db: dbInstance, backup: backupInstance } = await setUpTests();
-
-  db = dbInstance;
-  backup = backupInstance;
-
-  app = createApp({
-    ...allHandlers,
-    onGetMessages: onGetMessagesHandler(db),
-  });
-});
-
-beforeEach(() => {
-  backup.restore();
-});
+const { app, db } = setUpTests((db) => ({
+  onGetMessages: onGetMessagesHandler(db),
+}));
 
 describe("GET /messages", () => {
   it("should return empty array if no messages", async () => {

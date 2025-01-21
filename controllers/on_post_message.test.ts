@@ -1,31 +1,14 @@
-import { allHandlers, createApp, onPostMessageHanler } from "@/server";
+import { onPostMessageHanler } from "@/server";
 import { Knex } from "knex";
-import { IBackup } from "pg-mem";
-import { Express } from "express";
+
 import request from "supertest";
 import { END_POINTS } from "@/server";
 import { TABLES } from "@/db";
 import setUpTests from "@/utils/setup_tests";
 
-let app: Express;
-let backup: IBackup;
-let db: Knex;
-
-beforeAll(async () => {
-  const { db: dbInstance, backup: backupInstance } = await setUpTests();
-
-  db = dbInstance;
-  backup = backupInstance;
-
-  app = createApp({
-    ...allHandlers,
-    onPostMessage: onPostMessageHanler(db),
-  });
-});
-
-beforeEach(() => {
-  backup.restore();
-});
+const { app, db } = setUpTests((db: Knex) => ({
+  onPostMessage: onPostMessageHanler(db),
+}));
 
 describe("POST /messages", () => {
   it("should create a message in database", async () => {

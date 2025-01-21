@@ -1,37 +1,13 @@
-import { Express } from "express";
-import { IBackup } from "pg-mem";
-import { Knex } from "knex";
-import { allHandlers, createApp, onPostLoginHandler } from "@/server";
-import setUpTests from "@/utils/setup_tests";
+import { onPostLoginHandler } from "@/server";
 import request from "supertest";
 import { END_POINTS } from "@/server";
-import { MemoryStore } from "express-session";
 import { TABLES } from "@/db";
 import getAuthCookie from "@/utils/get_auth_cookie";
+import setUpTests from "@/utils/setup_tests";
 
-let app: Express;
-let backup: IBackup;
-let db: Knex;
-const store = new MemoryStore();
-
-beforeAll(async () => {
-  const { db: dbInstance, backup: backupInstance } = await setUpTests();
-
-  db = dbInstance;
-  backup = backupInstance;
-
-  app = createApp({
-    ...allHandlers,
-    onPostLogin: onPostLoginHandler(db),
-    store,
-  });
-});
-
-beforeEach(() => {
-  backup.restore();
-
-  store.clear();
-});
+const { db, app, store } = setUpTests((db) => ({
+  onPostLogin: onPostLoginHandler(db),
+}));
 
 const correctUser = { email: "test@gmail.com", password: "123" };
 const wrongUser = { email: "a@gmail.com", password: "wrong_password" };
