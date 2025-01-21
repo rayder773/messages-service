@@ -1,11 +1,7 @@
-type MessageServiceArgs = {
-  db: any;
-  logger: any;
-  ws: any;
+type User = {
+  email: string;
+  password: string;
+  id: string;
 };
 
-type MessageServiceAPI = {
-  createMessage: () => Promise<void>;
-};
-
-export { MessageServiceAPI, MessageServiceArgs };
+export { User };

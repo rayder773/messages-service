@@ -10,7 +10,9 @@ const validateRequest = (
   const validationResult = schema.validate(req.body);
 
   if (validationResult.error) {
-    res.status(400).send();
+    res.status(400).send({
+      message: validationResult.error.details[0].message,
+    });
     return;
   }
 
