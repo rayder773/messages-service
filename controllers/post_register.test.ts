@@ -31,7 +31,7 @@ describe("POST /register", () => {
   it("should return user data on success", async () => {
     const response = await request(app).post(END_POINTS.POST_REGISTER).send(newUser);
 
-    expect(response.body).toHaveProperty("email", newUser.email);
+    expect(response.body.user).toHaveProperty("email", newUser.email);
   });
 
   it("should return 400 if invalid data sended", async () => {

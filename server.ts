@@ -9,13 +9,10 @@ import { Knex } from "knex";
 import validateRequest from "./utils/validate_request";
 import Joi from "joi";
 import onPostLogin from "./controllers/on_post_login";
-import { getUserByEmail, getUserByEmailAndPass } from "./actions/get_user";
 import setupSession from "./utils/setup_session";
 import { MemoryStore } from "express-session";
-import postRegister from "./controllers/post_register";
-import createUser from "./actions/create_user";
+import { handleRequest } from "./controllers/post_register";
 import logoutSession from "./controllers/logout_session";
-import { hashPassword } from "./utils/password";
 
 const END_POINTS = {
   POST_MESSAGE: "/api/v1/messages",
@@ -74,19 +71,9 @@ const onPostRegisterHandler = (queryBuilder: Knex) => [
     Joi.object({ email: Joi.string().email().required(), password: Joi.string().required() })
   ),
   (req: Request, res: Response) =>
-    postRegister(
-      req,
-      res,
-      async () =>
-        createUser(
-          {
-            email: req.body.email,
-            password: await hashPassword(req.body.password),
-          },
-          queryBuilder
-        ),
-      () => getUserByEmail(req.body.email, queryBuilder)
-    ),
+    handleRequest(req, res, {
+      queryBuilder,
+    }),
 ];
 
 const onGetMessagesHandler = (queryBuilder: Knex) => (_: Request, res: Response) =>
