@@ -19,9 +19,20 @@ type UserCreatedResponse = {
   user: User;
 };
 
+type UserRequest = {
+  body: User;
+  query?: any;
+  params?: any;
+  session: {
+    isAuth?: boolean;
+  };
+};
+
 type RegisterResponse = UserExistResponse | UserCreatedResponse;
 
-const postRegister = async (userData: User, services: Services): Promise<RegisterResponse> => {
+const postRegister = async (req: UserRequest, services: Services): Promise<RegisterResponse> => {
+  const userData = req.body;
+
   const user = await getUserByEmail(userData.email, services.queryBuilder);
 
   if (user) {
@@ -40,7 +51,15 @@ const handleRequest = async (req: Request, res: Response, services: Services) =>
   let result;
 
   try {
-    result = await postRegister({ ...(req?.body || {}), ...(req?.query || {}) }, services);
+    result = await postRegister(
+      {
+        body: req.body,
+        query: req.query,
+        params: req.params,
+        session: req.session,
+      },
+      services
+    );
   } catch (error) {
     result = { status: 500, message: "Internal server error" };
   }
