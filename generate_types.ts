@@ -1,6 +1,9 @@
 import { Project, SourceFile } from "ts-morph";
 import path from "path";
-const __dirname = import.meta.dirname;
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 type SchemaJson = {
   kind: "Interface" | "TypeAlias";
