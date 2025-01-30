@@ -3,14 +3,14 @@ import { OpenAPIV3 } from "openapi-types";
 const user: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {
-    username: {
+    email: {
       type: "string",
     },
     password: {
       type: "string",
     },
   },
-  required: ["username", "password"],
+  required: ["email", "password"],
 };
 
 export default user;

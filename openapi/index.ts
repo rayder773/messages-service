@@ -14,7 +14,9 @@ const api: OpenAPIV3.Document = {
         requestBody: {
           content: {
             "application/json": {
-              schema: user,
+              schema: {
+                $ref: "#/components/schemas/User",
+              },
             },
           },
         },
@@ -24,6 +26,11 @@ const api: OpenAPIV3.Document = {
           },
         },
       },
+    },
+  },
+  components: {
+    schemas: {
+      User: user,
     },
   },
 };
