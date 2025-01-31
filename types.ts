@@ -3,7 +3,6 @@ export interface User {
     password: string;
 }
 
-export interface Product {
-    name: string;
-    price: number;
+export interface RegisterPostRequest {
+    body: User;
 }

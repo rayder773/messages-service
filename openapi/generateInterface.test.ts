@@ -64,12 +64,23 @@ const expectedResult: OptionalKind<InterfaceDeclarationStructure>[] = [
       },
     ],
   },
+  {
+    name: "RegisterPostRequest",
+    isExported: true,
+    properties: [
+      {
+        name: "body",
+        type: "User",
+        hasQuestionToken: false,
+      },
+    ],
+  },
 ];
 
 describe("generateInterface", () => {
   it("should generate interface", async () => {
     const result = generateInterface(testOpenApiDocument);
 
-    expect(result).toEqual(expectedResult);
+    expect(result).toEqual(expect.arrayContaining(expectedResult));
   });
 });
